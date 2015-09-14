@@ -38,18 +38,104 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.primesoft.midiplayer;
 
-package org.primesoft.musicplayer.notePlayer;
-
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Note;
-import org.bukkit.entity.Player;
+import java.io.File;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
+ * This class contains configuration
  *
  * @author SBPrime
  */
-public interface INotePlayer {
-    void playNote(Player player, Location location, Instrument instrument, Note note);
+public class ConfigProvider {
+
+    /**
+     * Number of ticks in one second
+     */
+    public static final int TICKS_PER_SECOND = 20;
+
+    /**
+     * The config file version
+     */
+    private static final int CONFIG_VERSION = 2;
+
+    private static boolean m_isConfigUpdate = false;
+
+    private static String m_configVersion;
+
+    private static File m_pluginFolder;
+
+    private static String m_instrumentMap;
+    
+    private static String m_drumMap;
+
+    /**
+     * Plugin root folder
+     *
+     * @return
+     */
+    public static File getPluginFolder() {
+        return m_pluginFolder;
+    }
+
+    /**
+     * Get the config version
+     *
+     * @return Current config version
+     */
+    public static String getConfigVersion() {
+        return m_configVersion;
+    }
+
+    /**
+     * Is the configuration up to date
+     *
+     * @return
+     */
+    public static boolean isConfigUpdated() {
+        return m_isConfigUpdate;
+    }
+
+    public static String getInstrumentMapFile() {
+        return m_instrumentMap;
+    }
+    
+    public static String getDrumMapFile() {
+        return m_drumMap;
+    }
+
+    /**
+     * Load configuration
+     *
+     * @param plugin parent plugin
+     * @return true if config loaded
+     */
+    public static boolean load(JavaPlugin plugin) {
+        if (plugin == null) {
+            return false;
+        }
+
+        plugin.saveDefaultConfig();
+        m_pluginFolder = plugin.getDataFolder();
+
+        Configuration config = plugin.getConfig();
+        ConfigurationSection mainSection = config.getConfigurationSection("midiPlayer");
+        if (mainSection == null) {
+            return false;
+        }
+
+        if(mainSection.isSet("checkVersion")){
+            mainSection.set("checkVersion", null);
+        }
+
+        m_configVersion = mainSection.getString("version", "?");
+        m_isConfigUpdate = mainSection.getInt("version", 0) == CONFIG_VERSION;
+        m_instrumentMap = mainSection.getString("map", "");
+        m_drumMap = mainSection.getString("drum", "");
+
+        return true;
+    }
 }

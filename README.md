@@ -1,4 +1,4 @@
 MidiPlayer
 ===========
 
-A minecraft plugin that allows you to play custom music on your server
+A bukkit/spigot plugin that allows you to play midi songs in your server.

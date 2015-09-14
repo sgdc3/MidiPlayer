@@ -1,3 +1,0 @@
-private void doTest(final Player player) {
-        player.playNote(player.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.G));
-    }

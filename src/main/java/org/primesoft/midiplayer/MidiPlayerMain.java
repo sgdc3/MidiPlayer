@@ -49,10 +49,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 import org.primesoft.midiplayer.commands.GlobalPlayMidiCommand;
 import org.primesoft.midiplayer.commands.PlayMidiCommand;
 import org.primesoft.midiplayer.commands.ReloadCommand;
-import org.primesoft.midiplayer.mcstats.MetricsLite;
 
 /**
  *
@@ -107,11 +107,6 @@ public class MidiPlayerMain extends JavaPlugin {
     }
 
     /**
-     * Metrics
-     */
-    private MetricsLite m_metrics;
-
-    /**
      * The plugin version
      */
     private String m_version;
@@ -142,16 +137,15 @@ public class MidiPlayerMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // Start metrics
         try {
             MetricsLite metrics = new MetricsLite(this);
-            if (!metrics.isOptOut()) {
-                m_metrics = metrics;
-                m_metrics.start();
-            }
+            metrics.start();
         } catch (IOException e) {
             log("Error initializing MCStats: " + e.getMessage());
         }
-        
+
         Server server = getServer();
         PluginDescriptionFile desc = getDescription();
         s_prefix = String.format("[%s]", desc.getName());

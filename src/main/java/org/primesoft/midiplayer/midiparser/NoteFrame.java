@@ -38,112 +38,63 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.primesoft.midiplayer;
+package org.primesoft.midiplayer.midiparser;
 
-import java.io.File;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.HashSet;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
- * This class contains configuration
- *
+ * Collection of MIDI notes played on the same time
  * @author SBPrime
  */
-public class ConfigProvider {
+public class NoteFrame {
 
     /**
-     * Number of ticks in one second
+     * The frame wait in milliseconds
      */
-    public static final int TICKS_PER_SECOND = 20;
+    private final long m_wait;
 
     /**
-     * The config file version
+     * Get the wait dellay in miliseconds
+     * @return 
      */
-    private static final int CONFIG_VERSION = 1;
-
-    private static boolean m_checkUpdate = false;
-
-    private static boolean m_isConfigUpdate = false;
-
-    private static String m_configVersion;
-
-    private static File m_pluginFolder;
-
-    private static String m_instrumentMap;
-    
-    private static String m_drumMap;
-
-    /**
-     * Plugin root folder
-     *
-     * @return
-     */
-    public static File getPluginFolder() {
-        return m_pluginFolder;
+    public long getWait() {
+        return m_wait;
     }
 
     /**
-     * Get the config version
-     *
-     * @return Current config version
+     * The notes
      */
-    public static String getConfigVersion() {
-        return m_configVersion;
+    private final NoteEntry[] m_notes;
+
+    public NoteFrame(long delta, HashSet<TrackEntry> notes) {
+        m_wait = delta;
+
+        if (notes == null) {
+            m_notes = new NoteEntry[0];
+        } else {
+            final int cnt = notes.size();
+            m_notes = new NoteEntry[cnt];
+
+            int i = 0;
+            for (TrackEntry entry : notes) {
+                m_notes[i] = entry.getNote();
+                i++;
+            }
+        }
     }
 
-    /**
-     * Is update checking enabled
-     *
-     * @return true if enabled
-     */
-    public static boolean getCheckUpdate() {
-        return m_checkUpdate;
-    }
-
-    /**
-     * Is the configuration up to date
-     *
-     * @return
-     */
-    public static boolean isConfigUpdated() {
-        return m_isConfigUpdate;
-    }
-
-    public static String getInstrumentMapFile() {
-        return m_instrumentMap;
-    }
-    
-    public static String getDrumMapFile() {
-        return m_drumMap;
-    }
-
-    /**
-     * Load configuration
-     *
-     * @param plugin parent plugin
-     * @return true if config loaded
-     */
-    public static boolean load(JavaPlugin plugin) {
-        if (plugin == null) {
-            return false;
+    public void play(Player player, Location location) {
+        if (player == null || !player.isOnline()) {
+            return;
         }
 
-        plugin.saveDefaultConfig();
-        m_pluginFolder = plugin.getDataFolder();
-
-        Configuration config = plugin.getConfig();
-        ConfigurationSection mainSection = config.getConfigurationSection("midiPlayer");
-        if (mainSection == null) {
-            return false;
+        if (location == null) {
+            location = player.getLocation();
         }
-
-        m_configVersion = mainSection.getString("version", "?");
-        m_checkUpdate = mainSection.getBoolean("checkVersion", true);
-        m_isConfigUpdate = mainSection.getInt("version", 0) == CONFIG_VERSION;
-        m_instrumentMap = mainSection.getString("map", "");
-        m_drumMap = mainSection.getString("drum", "");
-
-        return true;
+        for (NoteEntry note : m_notes) {
+            note.play(player, location);
+        }
     }
 }

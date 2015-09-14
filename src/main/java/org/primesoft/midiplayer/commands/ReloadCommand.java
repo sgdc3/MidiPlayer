@@ -47,7 +47,6 @@ import org.bukkit.entity.Player;
 import org.primesoft.midiplayer.ConfigProvider;
 import org.primesoft.midiplayer.MidiPlayerMain;
 import static org.primesoft.midiplayer.MidiPlayerMain.log;
-import org.primesoft.midiplayer.VersionChecker;
 import org.primesoft.midiplayer.instruments.MapFileParser;
 
 /**
@@ -81,9 +80,6 @@ public class ReloadCommand extends BaseCommand {
             return false;
         }
 
-        if (ConfigProvider.getCheckUpdate()) {
-            log(VersionChecker.CheckVersion(m_pluginMain.getVersion()));
-        }
         if (!ConfigProvider.isConfigUpdated()) {
             log("Please update your config file!");
         }

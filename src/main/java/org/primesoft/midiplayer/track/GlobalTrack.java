@@ -38,64 +38,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.primesoft.midiplayer.midiparser;
+package org.primesoft.midiplayer.track;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collection;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.primesoft.midiplayer.midiparser.NoteFrame;
 
 /**
- * Collection of MIDI notes played on the same time
+ * Global music track - music played by this track type
+ * is heard all over the server
  * @author SBPrime
  */
-public class NoteFrame {
-
+public class GlobalTrack extends BaseTrack {
     /**
-     * The frame wait in milliseconds
+     * The plugin
      */
-    private final long m_wait;
-
-    /**
-     * Get the wait dellay in miliseconds
-     * @return 
-     */
-    public long getWait() {
-        return m_wait;
+    private final JavaPlugin m_plugin;
+    
+    @Override
+    protected Player[] getPlayers() {
+        Collection<? extends Player> playersCollection = m_plugin.getServer().getOnlinePlayers();
+        return playersCollection.toArray(new Player[playersCollection.size()]);
     }
 
-    /**
-     * The notes
-     */
-    private final NoteEntry[] m_notes;
-
-    public NoteFrame(long delta, HashSet<TrackEntry> notes) {
-        m_wait = delta;
-
-        if (notes == null) {
-            m_notes = new NoteEntry[0];
-        } else {
-            final int cnt = notes.size();
-            m_notes = new NoteEntry[cnt];
-
-            int i = 0;
-            for (TrackEntry entry : notes) {
-                m_notes[i] = entry.getNote();
-                i++;
-            }
-        }
+    @Override
+    protected Location getLocation() {
+        return null;
     }
 
-    public void play(Player player, Location location) {
-        if (player == null || !player.isOnline()) {
-            return;
-        }
-
-        if (location == null) {
-            location = player.getLocation();
-        }
-        for (NoteEntry note : m_notes) {
-            note.play(player, location);
-        }
+    public GlobalTrack(JavaPlugin plugin, NoteFrame[] notes) {
+        this(plugin, notes, false);
+    }
+    
+    public GlobalTrack(JavaPlugin plugin, NoteFrame[] notes, boolean loop) {
+        super(notes, loop);
+        m_plugin = plugin;
     }
 }
