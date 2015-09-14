@@ -17,8 +17,8 @@ commands:
   playmiditoplayer:
     description: 'Play midi file to a specific player'
     usage: /<command> <song>
-    permission: midiplayer.play
-    aliases: play
+    permission: midiplayer.playtoplayer
+    aliases: playtoplayer
   playglobalmidi:
     description: 'Play midi file for all players on the server'
     usage: /<command>
