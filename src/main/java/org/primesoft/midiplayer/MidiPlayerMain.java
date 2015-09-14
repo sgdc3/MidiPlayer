@@ -52,6 +52,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.MetricsLite;
 import org.primesoft.midiplayer.commands.GlobalPlayMidiCommand;
 import org.primesoft.midiplayer.commands.PlayMidiCommand;
+import org.primesoft.midiplayer.commands.PlayMidiToPlayerCommand;
 import org.primesoft.midiplayer.commands.ReloadCommand;
 
 /**
@@ -173,6 +174,7 @@ public class MidiPlayerMain extends JavaPlugin {
         m_reloadCommandHandler = new ReloadCommand(this);
         GlobalPlayMidiCommand playGlobalCommandHandler = new GlobalPlayMidiCommand(this, m_musicPlayer);
         PlayMidiCommand playCommandHandler = new PlayMidiCommand(this, m_musicPlayer);
+        PlayMidiToPlayerCommand playCommandToPlayerHandler = new PlayMidiToPlayerCommand(this, m_musicPlayer);
         
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents( playCommandHandler, this);
@@ -184,7 +186,10 @@ public class MidiPlayerMain extends JavaPlugin {
         commandReload.setExecutor(m_reloadCommandHandler);
         
         PluginCommand commandPlay = getCommand("playmidi");
-        commandPlay.setExecutor( playCommandHandler);
+        commandPlay.setExecutor(playCommandHandler);
+        
+        PluginCommand commandPlayToPlayer = getCommand("playmiditoplayer");
+        commandPlayToPlayer.setExecutor(playCommandToPlayerHandler);
     }
 
     @Override
